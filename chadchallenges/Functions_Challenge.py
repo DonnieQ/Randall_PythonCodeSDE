@@ -45,6 +45,6 @@ while calc:
             print(num1, "/", num2, "=", divide(num1, num2))
         elif data == '5':
             calc = False
-            break
+            exit(0)
     else:
         print("Invalid Input")
