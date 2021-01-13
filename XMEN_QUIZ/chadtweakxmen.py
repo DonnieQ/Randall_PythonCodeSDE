@@ -44,6 +44,6 @@ if Behavior == "yes":
 elif Behavior == "no":
     a.append(2)
 
-for x in Xmen_Mutants.value():
-    if x == a:
-        print(x)
+for x in a:
+    if x == [1,1,1,1,1]:
+        print(Xmen_Mutants.values[2])

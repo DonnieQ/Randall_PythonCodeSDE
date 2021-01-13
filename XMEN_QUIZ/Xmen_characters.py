@@ -9,7 +9,7 @@ Xmen_Mutants = {
 
 message = 'Which X-men Mutant are you?'
 message2= 'Your X-men mutant is '
-a=list(range(6))
+a=[]
 while True:
      try:
         print(message)
@@ -37,7 +37,7 @@ elif fly == "no":
     a.append(2)
 if Mutant_Level == "yes":
     a.append(1)
-elif Mutant_level == "no":
+elif Mutant_Level == "no":
     a.append(2)
 if Behavior == "yes":
     a.append(1)
