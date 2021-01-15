@@ -1,29 +1,103 @@
 import Items
+import World
+
+
+
 class Player:
     def __init__(self):
-        self.inventory = [Items.Kamehameha]
+        self.inventory = [Items.Kamehameha(), Items.SensuBean()]
+        #hardcoding player start location
+        self.x = World.start_tile_location[0]
+        self.y = World.start_tile_location[1]
         self.hp = 100
-    
+        
+        self.victory = False
+
     def is_alive(self):
         return self.hp > 0
 
     def print_inventory(self):
+        print("Inventory:")
         for item in self.inventory:
-            print(item, '\n')
+            print('* ' + str(item))
 
-    def attack(self, enemy):
+    def heal(self):
+        consumables = [Item for Item in self.inventory
+                       if isinstance(Item, Items.Consumable)]
+        if not consumables:
+            print("You don't have any items to heal you!")
+            return
+
+        for i, item in enumerate(consumables, 1):
+            print("Choose an item to use to heal: ")
+            print("{}. {}".format(i, Item))
+
+        valid = False
+        while not valid:
+            choice = input("")
+            try:
+                to_eat = consumables[int(choice) - 1]
+                self.hp = min(100, self.hp + to_eat.healing_value)
+                self.inventory.remove(to_eat)
+                print("""
+                ooooooooooooooo
+                Current HP: {}
+                ooooooooooooooo
+                """.format(self.hp))
+                valid = True
+            except (ValueError, IndexError):
+                print("Invalid choice, try again.")
+    #defines and utilizes weapon in player inventory
+    def most_powerful_weapon(self):
+        max_damage = 0
         best_weapon = None
-        max_dmg = 0
-        for i in self.inventory:
-            # isinstance(object, type) -- returns true if i is actaully that type 
-            if isinstance(i, items.Weapon):
-                if i.damage > max_dmg:
-                    max_dmg = i.damage
-                    best_weapon = i
-        # using format to print best weapon currently in inventory
-        print("You use {} against {}!".format(best_weapon.name, enemy.name))
+        for item in self.inventory:
+            try:
+                if item.damage > max_damage:
+                    best_weapon = item
+                    max_damage = item.damage
+            except AttributeError:
+                pass
+
+        return best_weapon
+
+    # using move() method. dx and dy means change in x and change in y.
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
+
+    def move_north(self):
+        self.move(dx=0, dy=-1)
+
+    def move_south(self):
+        self.move(dx=0, dy=1)
+
+    def move_east(self):
+        self.move(dx=1, dy=0)
+
+    def move_west(self):
+        self.move(dx=-1, dy=0)
+
+    def attack(self):
+        best_weapon = self.most_powerful_weapon()
+        room = World.tile_at(self.x, self.y)
+        enemy = room.enemy
+        print("""
+        ***********************
+        You use {} against {}!
+        ***********************
+        """.format(best_weapon.name, enemy.name))
+        print("{}".format(best_weapon.picture))
         enemy.hp -= best_weapon.damage
         if not enemy.is_alive():
-            print("You killed {}!".format(enemy.name))
+            print("""
+            **************
+            You killed {}!
+            **************
+            """.format(enemy.name))
         else:
-            print("{} HP is {}.".format(enemy.name, enemy.hp))
+            print("""
+            ++++++++++++++
+            {} HP is {}.
+            ++++++++++++++
+            """.format(enemy.name, enemy.hp))
